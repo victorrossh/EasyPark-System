@@ -24,15 +24,13 @@ namespace park_control
             // Form settings
             this.Text = "Login - Parking System";
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Size = new Size(320, 250);
-            this.BackColor = Color.FromArgb(28, 28, 30);
-
-            // Enable custom title bar color
             this.FormBorderStyle = FormBorderStyle.None;
-            
+            this.MinimumSize = new Size(720, 540);
+            this.MaximumSize = new Size(1024, 768);
+            this.Size = new Size(720, 540);
+            this.BackColor = Color.FromArgb(28, 28, 30);
+            this.Padding = new Padding(2);
+
             // Custom title bar
             Panel titleBar = new Panel
             {
@@ -50,73 +48,211 @@ namespace park_control
                 AutoSize = true
             };
 
-            Button closeButton = new Button
+            // Buttons
+            Button minimizeButton = new Button
             {
-                Text = "×",
+                Text = "─",
                 Size = new Size(32, 32),
                 FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(38, 38, 40),
+                BackColor = Color.Transparent,
                 ForeColor = Color.FromArgb(225, 225, 225),
-                Font = new Font("Arial", 14F),
+                Font = new Font("Segoe UI", 9F),
                 Cursor = Cursors.Hand,
                 Dock = DockStyle.Right,
                 FlatAppearance = { BorderSize = 0 }
             };
 
+            Button maximizeButton = new Button
+            {
+                Text = "□",
+                Size = new Size(32, 32),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                ForeColor = Color.FromArgb(225, 225, 225),
+                Font = new Font("Segoe UI", 9F),
+                Cursor = Cursors.Hand,
+                Dock = DockStyle.Right,
+                FlatAppearance = { BorderSize = 0 }
+            };
+
+            Button closeButton = new Button
+            {
+                Text = "✕",
+                Size = new Size(32, 32),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                ForeColor = Color.FromArgb(225, 225, 225),
+                Font = new Font("Segoe UI", 9F),
+                Cursor = Cursors.Hand,
+                Dock = DockStyle.Right,
+                FlatAppearance = { BorderSize = 0 }
+            };
+
+           // Button functions
             closeButton.Click += (s, e) => this.Close();
             closeButton.MouseEnter += (s, e) => closeButton.BackColor = Color.FromArgb(232, 17, 35);
-            closeButton.MouseLeave += (s, e) => closeButton.BackColor = Color.FromArgb(38, 38, 40);
+            closeButton.MouseLeave += (s, e) => closeButton.BackColor = Color.Transparent;
 
-            titleBar.Controls.AddRange(new Control[] { titleLabel, closeButton });
-
-            // Common style for TextBoxes
-            Action<TextBox> styleTextBox = (txt) => {
-                txt.BackColor = Color.FromArgb(38, 38, 40);
-                txt.ForeColor = Color.FromArgb(225, 225, 225);
-                txt.Font = new Font("Segoe UI", 10F);
-                txt.BorderStyle = BorderStyle.FixedSingle;
-                txt.Size = new Size(180, 25);
+            maximizeButton.MouseEnter += (s, e) => maximizeButton.BackColor = Color.FromArgb(50, 50, 52);
+            maximizeButton.MouseLeave += (s, e) => maximizeButton.BackColor = Color.Transparent;
+            maximizeButton.Click += (s, e) => {
+                if (this.Size == new Size(720, 540))
+                {
+                    // Calculate centered position
+                    Rectangle workingArea = Screen.FromHandle(this.Handle).WorkingArea;
+                    this.MaximumSize = new Size(1024, 768);
+                    
+                    // Calculate coordinates to center
+                    int x = workingArea.X + (workingArea.Width - this.MaximumSize.Width) / 2;
+                    int y = workingArea.Y + (workingArea.Height - this.MaximumSize.Height) / 2;
+                    
+                    this.Location = new Point(x, y);
+                    this.Size = this.MaximumSize;
+                    maximizeButton.Text = "❐";
+                }
+                else
+                {
+                    // Calculate centered position for reduced size
+                    Rectangle workingArea = Screen.FromHandle(this.Handle).WorkingArea;
+                    this.Size = new Size(720, 540);
+                    
+                    // Calculate coordinates to center
+                    int x = workingArea.X + (workingArea.Width - this.Size.Width) / 2;
+                    int y = workingArea.Y + (workingArea.Height - this.Size.Height) / 2;
+                    
+                    this.Location = new Point(x, y);
+                    this.StartPosition = FormStartPosition.Manual;
+                    this.WindowState = FormWindowState.Normal;
+                    maximizeButton.Text = "□";
+                }
             };
 
-            // TextBoxes
-            TextBox txtUsername = new TextBox();
-            txtUsername.Location = new Point(100, 70);
-            styleTextBox(txtUsername);
+            minimizeButton.MouseEnter += (s, e) => minimizeButton.BackColor = Color.FromArgb(50, 50, 52);
+            minimizeButton.MouseLeave += (s, e) => minimizeButton.BackColor = Color.Transparent;
+            minimizeButton.Click += (s, e) => this.WindowState = FormWindowState.Minimized;
 
-            TextBox txtPassword = new TextBox();
-            txtPassword.Location = new Point(100, 120);
-            txtPassword.PasswordChar = '•';
-            styleTextBox(txtPassword);
+            // Add buttons in the correct order
+            titleBar.Controls.Add(titleLabel);
+            titleBar.Controls.Add(minimizeButton);
+            titleBar.Controls.Add(maximizeButton);
+            titleBar.Controls.Add(closeButton);
 
-            // Labels
-            Action<Label> styleLabel = (lbl) => {
-                lbl.ForeColor = Color.FromArgb(225, 225, 225);
-                lbl.Font = new Font("Segoe UI", 10F);
+            // Create login controls with relative sizes and responsive layout
+            Label lblUsername = new Label
+            {
+                Text = "Username:",
+                ForeColor = Color.FromArgb(225, 225, 225),
+                Font = new Font("Segoe UI", 10F),
+                AutoSize = true,
+                Anchor = AnchorStyles.Left
             };
 
-            Label lblUsername = new Label();
-            lblUsername.Text = "Username:";
-            lblUsername.Location = new Point(20, 73);
-            styleLabel(lblUsername);
+            TextBox txtUsername = new TextBox
+            {
+                BackColor = Color.FromArgb(38, 38, 40),
+                ForeColor = Color.FromArgb(225, 225, 225),
+                Font = new Font("Segoe UI", 10F),
+                BorderStyle = BorderStyle.FixedSingle,
+                Anchor = AnchorStyles.Left | AnchorStyles.Right,
+                MinimumSize = new Size(180, 25)
+            };
 
-            Label lblPassword = new Label();
-            lblPassword.Text = "Password:";
-            lblPassword.Location = new Point(20, 123);
-            styleLabel(lblPassword);
+            Label lblPassword = new Label
+            {
+                Text = "Password:",
+                ForeColor = Color.FromArgb(225, 225, 225),
+                Font = new Font("Segoe UI", 10F),
+                AutoSize = true,
+                Anchor = AnchorStyles.Left
+            };
 
-            // Login button
-            Button btnLogin = new Button();
-            btnLogin.Text = "Login";
-            btnLogin.Location = new Point(100, 170);
-            btnLogin.Size = new Size(180, 35);
-            btnLogin.FlatStyle = FlatStyle.Flat;
-            btnLogin.BackColor = Color.FromArgb(147, 112, 219); // Light purple
-            btnLogin.ForeColor = Color.White;
-            btnLogin.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
-            btnLogin.Cursor = Cursors.Hand;
-            btnLogin.FlatAppearance.BorderSize = 0;
+            TextBox txtPassword = new TextBox
+            {
+                BackColor = Color.FromArgb(38, 38, 40),
+                ForeColor = Color.FromArgb(225, 225, 225),
+                Font = new Font("Segoe UI", 10F),
+                BorderStyle = BorderStyle.FixedSingle,
+                PasswordChar = '•',
+                Anchor = AnchorStyles.Left | AnchorStyles.Right,
+                MinimumSize = new Size(180, 25)
+            };
 
-            // Button hover effect
+            Button btnLogin = new Button
+            {
+                Text = "Login",
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(147, 112, 219),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                Cursor = Cursors.Hand,
+                FlatAppearance = { BorderSize = 0 },
+                MinimumSize = new Size(180, 35),
+                Anchor = AnchorStyles.Left | AnchorStyles.Right
+            };
+
+            // Responsive layout adjusted
+            TableLayoutPanel loginTable = new TableLayoutPanel
+            {
+                ColumnCount = 2,
+                RowCount = 3,
+                Dock = DockStyle.Fill,
+                Padding = new Padding(10),
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                MinimumSize = new Size(300, 200)
+            };
+
+            // Configure columns with fixed minimum sizes
+            loginTable.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80)); 
+            loginTable.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 180)); 
+
+            // Configure rows with fixed spacing
+            loginTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 35));
+            loginTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 35));
+            loginTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 45));
+
+            // Adjust minimum sizes 
+            txtUsername.MinimumSize = new Size(180, 25);
+            txtPassword.MinimumSize = new Size(180, 25);
+            btnLogin.MinimumSize = new Size(180, 35);
+
+            // Add controls with margins
+            loginTable.Controls.Add(lblUsername, 0, 0);
+            loginTable.Controls.Add(txtUsername, 1, 0);
+            loginTable.Controls.Add(lblPassword, 0, 1);
+            loginTable.Controls.Add(txtPassword, 1, 1);
+            loginTable.Controls.Add(btnLogin, 1, 2);
+
+            Panel centerPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(10)
+            };
+
+            TableLayoutPanel mainLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 3,
+                RowCount = 3,
+                MinimumSize = new Size(300, 200)
+            };
+            for (int i = 0; i < 3; i++)
+            {
+                mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+            }
+
+            mainLayout.Controls.Add(loginTable, 1, 1);
+
+            centerPanel.Controls.Add(mainLayout);
+
+            // Add all elements to the form
+            this.Controls.AddRange(new Control[] { 
+                titleBar,
+                centerPanel
+            });
+
+            // Button events
             btnLogin.MouseEnter += (s, e) => btnLogin.BackColor = Color.FromArgb(132, 100, 197);
             btnLogin.MouseLeave += (s, e) => btnLogin.BackColor = Color.FromArgb(147, 112, 219);
 
@@ -140,7 +276,7 @@ namespace park_control
                         customMsgBox.StartPosition = FormStartPosition.CenterParent;
                         customMsgBox.Size = new Size(300, 150);
 
-                        // Barra de título personalizada para mensagem de erro
+                        // Custom title bar for error message
                         Panel errorTitleBar = new Panel
                         {
                             BackColor = Color.FromArgb(38, 38, 40),
@@ -215,16 +351,6 @@ namespace park_control
                     SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
                 }
             };
-
-            // Add controls to the form
-            this.Controls.AddRange(new Control[] { 
-                titleBar,
-                txtUsername, 
-                txtPassword, 
-                lblUsername, 
-                lblPassword, 
-                btnLogin 
-            });
         }
 
         private bool ValidateLogin(string username, string password)
@@ -252,6 +378,48 @@ namespace park_control
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            const int WM_NCHITTEST = 0x84;
+            const int HTLEFT = 10;
+            const int HTRIGHT = 11;
+            const int HTTOP = 12;
+            const int HTTOPLEFT = 13;
+            const int HTTOPRIGHT = 14;
+            const int HTBOTTOM = 15;
+            const int HTBOTTOMLEFT = 16;
+            const int HTBOTTOMRIGHT = 17;
+
+            if (m.Msg == WM_NCHITTEST)
+            {
+                Point pos = new Point(m.LParam.ToInt32());
+                pos = this.PointToClient(pos);
+
+                int border = 10; 
+
+                if (pos.Y <= border && pos.X <= border)
+                    m.Result = (IntPtr)HTTOPLEFT;
+                else if (pos.Y <= border && pos.X >= this.Width - border)
+                    m.Result = (IntPtr)HTTOPRIGHT;
+                else if (pos.Y >= this.Height - border && pos.X <= border)
+                    m.Result = (IntPtr)HTBOTTOMLEFT;
+                else if (pos.Y >= this.Height - border && pos.X >= this.Width - border)
+                    m.Result = (IntPtr)HTBOTTOMRIGHT;
+                else if (pos.Y <= border)
+                    m.Result = (IntPtr)HTTOP;
+                else if (pos.Y >= this.Height - border)
+                    m.Result = (IntPtr)HTBOTTOM;
+                else if (pos.X <= border)
+                    m.Result = (IntPtr)HTLEFT;
+                else if (pos.X >= this.Width - border)
+                    m.Result = (IntPtr)HTRIGHT;
+                else
+                    base.WndProc(ref m);
+            }
+            else
+                base.WndProc(ref m);
         }
     }
 } 
