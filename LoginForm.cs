@@ -269,75 +269,43 @@ namespace park_control
                 {
                     using (Form customMsgBox = new Form())
                     {
-                        customMsgBox.Text = "Error";
                         customMsgBox.BackColor = Color.FromArgb(28, 28, 30);
-                        customMsgBox.ForeColor = Color.FromArgb(225, 225, 225);
                         customMsgBox.FormBorderStyle = FormBorderStyle.None;
                         customMsgBox.StartPosition = FormStartPosition.CenterParent;
                         customMsgBox.Size = new Size(300, 150);
-
-                        // Custom title bar for error message
-                        Panel errorTitleBar = new Panel
+                        
+                        //Add a panel to simulate the border
+                        Panel borderPanel = new Panel
                         {
-                            BackColor = Color.FromArgb(38, 38, 40),
-                            Dock = DockStyle.Top,
-                            Height = 32
+                            Dock = DockStyle.Fill,
+                            BackColor = Color.Transparent,
+                            BorderStyle = BorderStyle.FixedSingle //thin border
                         };
+                        customMsgBox.Controls.Add(borderPanel);
 
-                        Label errorTitle = new Label
-                        {
-                            Text = "Error",
-                            ForeColor = Color.FromArgb(225, 225, 225),
-                            Font = new Font("Segoe UI", 9F),
-                            Location = new Point(10, 8),
-                            AutoSize = true
-                        };
-
-                        Button errorCloseButton = new Button
-                        {
-                            Text = "×",
-                            Size = new Size(32, 32),
-                            FlatStyle = FlatStyle.Flat,
-                            BackColor = Color.FromArgb(38, 38, 40),
-                            ForeColor = Color.FromArgb(225, 225, 225),
-                            Font = new Font("Arial", 14F),
-                            Cursor = Cursors.Hand,
-                            Dock = DockStyle.Right,
-                            FlatAppearance = { BorderSize = 0 }
-                        };
-
-                        errorCloseButton.Click += (s, e) => customMsgBox.Close();
-                        errorCloseButton.MouseEnter += (s, e) => errorCloseButton.BackColor = Color.FromArgb(232, 17, 35);
-                        errorCloseButton.MouseLeave += (s, e) => errorCloseButton.BackColor = Color.FromArgb(38, 38, 40);
-
-                        errorTitleBar.Controls.AddRange(new Control[] { errorTitle, errorCloseButton });
-
-                        Label lblMessage = new Label
+                        //Error message
+                        Label messageLabel = new Label
                         {
                             Text = "Invalid username or password!",
                             ForeColor = Color.FromArgb(225, 225, 225),
-                            Font = new Font("Segoe UI", 10F),
-                            AutoSize = true,
-                            Location = new Point(30, 50)
+                            Dock = DockStyle.Fill,
+                            TextAlign = ContentAlignment.MiddleCenter
                         };
+                        borderPanel.Controls.Add(messageLabel);
 
-                        Button btnOk = new Button
+                        // Ok button
+                        Button okButton = new Button
                         {
                             Text = "OK",
-                            DialogResult = DialogResult.OK,
-                            FlatStyle = FlatStyle.Flat,
+                            Size = new Size(0, 35),
+                            Dock = DockStyle.Bottom,
                             BackColor = Color.FromArgb(147, 112, 219),
-                            ForeColor = Color.White,
-                            Size = new Size(80, 30),
-                            Location = new Point(110, 90),
-                            FlatAppearance = { BorderSize = 0 }
+                            ForeColor = Color.White
                         };
+                        okButton.Click += (sender, e) => customMsgBox.Close();
+                        borderPanel.Controls.Add(okButton);
 
-                        btnOk.MouseEnter += (s, ev) => btnOk.BackColor = Color.FromArgb(132, 100, 197);
-                        btnOk.MouseLeave += (s, ev) => btnOk.BackColor = Color.FromArgb(147, 112, 219);
-
-                        customMsgBox.Controls.AddRange(new Control[] { errorTitleBar, lblMessage, btnOk });
-                        customMsgBox.ShowDialog(this);
+                        customMsgBox.ShowDialog();
                     }
                 }
             };
